@@ -5,93 +5,257 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KGS Free Batches</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .common-header { background: #333; color: white; padding: 15px; }
-        .header-title { font-size: 24px; margin-left: 50px; }
-        .controls { padding: 20px; }
-        .search-input { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
-        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; }
-        .card img { width: 100%; height: 150px; object-fit: cover; }
-        .card-content { padding: 15px; }
-        .card-content h3 { font-size: 16px; margin-bottom: 10px; }
-        .card-content p { font-size: 14px; color: #666; margin-bottom: 10px; }
-        .btn-fav { background: #f0f0f0; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
-        .btn-fav.active { background: #FFD700; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 40px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .search-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .card-date {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .btn-fav {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-fav:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-fav.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+        }
     </style>
 </head>
 <body>
-    <header class="common-header">
-        <h1 class="header-title">KGS Free Batches</h1>
-    </header>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 KGS Free Batches</h1>
+            <p>Your Gateway to Quality Education</p>
+        </div>
 
-    <div class="controls">
-        <input type="text" id="search" class="search-input" placeholder="🔍 Search batches..." oninput="filterBatches()">
-    </div>
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="search" 
+                class="search-input" 
+                placeholder="🔍 Search batches by name..."
+                oninput="filterBatches()"
+            >
+        </div>
 
-    <div class="grid-container" id="batchesGrid">
-        <!-- Batches will load here -->
+        <div class="grid" id="batchesGrid">
+            <!-- Cards will be generated here -->
+        </div>
     </div>
 
     <script>
-        // Sample data
         const allBatches = [
-            { id: 1, title: "MPPSC Prelims Batch 2026", start_at: "2026-02-23", image_large: "https://via.placeholder.com/300x150?text=MPPSC" },
-            { id: 2, title: "Bihar Daroga (ASI Operator) PT+Mains Batch", start_at: "2026-03-18", image_large: "https://via.placeholder.com/300x150?text=Daroga" },
-            { id: 3, title: "CAPF PAPER - II Batch 2026", start_at: "2026-02-23", image_large: "https://via.placeholder.com/300x150?text=CAPF" }
+            { id: 1, title: "MPPSC Prelims Batch 2026", date: "23 Feb 2026" },
+            { id: 2, title: "Bihar Daroga (ASI Operator) PT+Mains Batch", date: "18 Mar 2026" },
+            { id: 3, title: "CAPF PAPER - II Batch 2026", date: "23 Feb 2026" },
+            { id: 4, title: "IBPS PO/CLERK (Pre+Mains) TARGET BATCH 2026", date: "10 Mar 2026" },
+            { id: 5, title: "Bihar Police सिपाही Batch 2026", date: "10 Mar 2026" },
+            { id: 6, title: "UP TGT Practice Recorded Batch", date: "05 Feb 2026" },
+            { id: 7, title: "BPSC (Prelims+Mains) Foundation Recorded Batch", date: "04 Feb 2026" },
+            { id: 8, title: "Bihar Daroga (SI) Mains Batch 2026", date: "03 Feb 2026" },
+            { id: 9, title: "MP SI Mains Recorded + Live Batch 2026", date: "02 Feb 2026" },
+            { id: 10, title: "UGC NET/JRF Home Science Foundation Batch June 2026", date: "03 Feb 2026" }
         ];
 
         function isFav(id) {
-            const favs = JSON.parse(localStorage.getItem('favouriteCourses') || '[]');
-            return favs.some(f => String(f.id) === String(id));
+            const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+            return favs.includes(id);
         }
 
-        function toggleFav(batch) {
-            let favs = JSON.parse(localStorage.getItem('favouriteCourses') || '[]');
-            const exists = favs.some(f => String(f.id) === String(batch.id));
-            if (exists) {
-                favs = favs.filter(f => String(f.id) !== String(batch.id));
+        function toggleFav(id) {
+            let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+            if (favs.includes(id)) {
+                favs = favs.filter(f => f !== id);
             } else {
-                favs.push(batch);
+                favs.push(id);
             }
-            localStorage.setItem('favouriteCourses', JSON.stringify(favs));
+            localStorage.setItem('favs', JSON.stringify(favs));
             renderBatches(allBatches);
         }
 
-        function formatDate(dateStr) {
-            if (!dateStr) return 'N/A';
-            const date = new Date(dateStr);
-            const options = { day: '2-digit', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options);
-        }
-
-        function renderBatches(list) {
+        function renderBatches(batches) {
             const grid = document.getElementById('batchesGrid');
-            grid.innerHTML = '';
-            list.forEach(b => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${b.image_large}" alt="${b.title}">
-                    <div class="card-content">
-                        <h3>${b.title}</h3>
-                        <p>Start: ${formatDate(b.start_at)}</p>
-                        <button class="btn-fav ${isFav(b.id) ? 'active' : ''}" onclick="toggleFav({id: ${b.id}, title: '${b.title}', start_at: '${b.start_at}'})">
-                            ${isFav(b.id) ? '★ Favorited' : '☆ Add to Favorites'}
-                        </button>
+            
+            if (batches.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1;">
+                        <div class="empty-state">
+                            <h2>No batches found</h2>
+                            <p>Try searching with different keywords</p>
+                        </div>
                     </div>
                 `;
-                grid.appendChild(card);
-            });
+                return;
+            }
+
+            grid.innerHTML = batches.map(batch => `
+                <div class="card">
+                    <div class="card-image">
+                        ${batch.title}
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${batch.title}</div>
+                        <div class="card-date">📅 Start: ${batch.date}</div>
+                        <button 
+                            class="btn-fav ${isFav(batch.id) ? 'active' : ''}"
+                            onclick="toggleFav(${batch.id})"
+                        >
+                            ${isFav(batch.id) ? '⭐ Favorited' : '☆ Add to Favorites'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         function filterBatches() {
-            const q = document.getElementById('search').value.toLowerCase();
-            const filtered = allBatches.filter(b => b.title.toLowerCase().includes(q));
+            const query = document.getElementById('search').value.toLowerCase();
+            const filtered = allBatches.filter(b => 
+                b.title.toLowerCase().includes(query)
+            );
             renderBatches(filtered);
         }
 
+        // Initial render
         renderBatches(allBatches);
     </script>
 </body>
