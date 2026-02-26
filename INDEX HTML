@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KGS Free Batches</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .common-header { background: #333; color: white; padding: 15px; }
+        .header-title { font-size: 24px; margin-left: 50px; }
+        .controls { padding: 20px; }
+        .search-input { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 5px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+        .card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); cursor: pointer; }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card-content { padding: 15px; }
+        .card-content h3 { font-size: 16px; margin-bottom: 10px; }
+        .card-content p { font-size: 14px; color: #666; margin-bottom: 10px; }
+        .btn-fav { background: #f0f0f0; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 14px; }
+        .btn-fav.active { background: #FFD700; }
+    </style>
+</head>
+<body>
+    <header class="common-header">
+        <h1 class="header-title">KGS Free Batches</h1>
+    </header>
+
+    <div class="controls">
+        <input type="text" id="search" class="search-input" placeholder="🔍 Search batches..." oninput="filterBatches()">
+    </div>
+
+    <div class="grid-container" id="batchesGrid">
+        <!-- Batches will load here -->
+    </div>
+
+    <script>
+        // Sample data
+        const allBatches = [
+            { id: 1, title: "MPPSC Prelims Batch 2026", start_at: "2026-02-23", image_large: "https://via.placeholder.com/300x150?text=MPPSC" },
+            { id: 2, title: "Bihar Daroga (ASI Operator) PT+Mains Batch", start_at: "2026-03-18", image_large: "https://via.placeholder.com/300x150?text=Daroga" },
+            { id: 3, title: "CAPF PAPER - II Batch 2026", start_at: "2026-02-23", image_large: "https://via.placeholder.com/300x150?text=CAPF" }
+        ];
+
+        function isFav(id) {
+            const favs = JSON.parse(localStorage.getItem('favouriteCourses') || '[]');
+            return favs.some(f => String(f.id) === String(id));
+        }
+
+        function toggleFav(batch) {
+            let favs = JSON.parse(localStorage.getItem('favouriteCourses') || '[]');
+            const exists = favs.some(f => String(f.id) === String(batch.id));
+            if (exists) {
+                favs = favs.filter(f => String(f.id) !== String(batch.id));
+            } else {
+                favs.push(batch);
+            }
+            localStorage.setItem('favouriteCourses', JSON.stringify(favs));
+            renderBatches(allBatches);
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            const options = { day: '2-digit', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+
+        function renderBatches(list) {
+            const grid = document.getElementById('batchesGrid');
+            grid.innerHTML = '';
+            list.forEach(b => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${b.image_large}" alt="${b.title}">
+                    <div class="card-content">
+                        <h3>${b.title}</h3>
+                        <p>Start: ${formatDate(b.start_at)}</p>
+                        <button class="btn-fav ${isFav(b.id) ? 'active' : ''}" onclick="toggleFav({id: ${b.id}, title: '${b.title}', start_at: '${b.start_at}'})">
+                            ${isFav(b.id) ? '★ Favorited' : '☆ Add to Favorites'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterBatches() {
+            const q = document.getElementById('search').value.toLowerCase();
+            const filtered = allBatches.filter(b => b.title.toLowerCase().includes(q));
+            renderBatches(filtered);
+        }
+
+        renderBatches(allBatches);
+    </script>
+</body>
+</html>
